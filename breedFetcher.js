@@ -1,13 +1,17 @@
 const request = require('request');
 
-request('https://api.thecatapi.com/v1/breeds/search' + `?q=${process.argv[2]}`, (error, response, body) => {
-  if (error) {
-    console.log(`Yikes!  Something went wrong... Specifically: ${error}`);
-  }
-  const data = JSON.parse(body);
-  if (data[0] === undefined) {
-    console.log(`Are you sure ${process.argv[2]} is a cat breed?  I don't think it is.`);
-  } else {
-    console.log(data[0]['description']);
-  }
-});
+const fetchBreedDescription = (breedName, callback) => {
+  request('https://api.thecatapi.com/v1/breeds/search' + `?q=${breedName}`, (error, response, body) => {
+    if (error) {
+      return callback(`Yikes!  Something went wrong... Specifically: ${error}`, null);
+    }
+    const data = JSON.parse(body);
+    if (data[0] === undefined) {
+      return callback(`Are you sure ${breedName} is a cat breed?  I don't think it is.`, null);
+    } else {
+      return callback(null, data[0]['description']);
+    }
+  });
+};
+
+module.exports = { fetchBreedDescription };
